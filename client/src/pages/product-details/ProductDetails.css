@@ -1,0 +1,39 @@
+.product-tile {
+  margin-bottom: 12px;
+}
+
+.product-category {
+  color: #77828b;
+  margin-bottom: 8px;
+}
+
+.product-price {
+  color: #77828b;
+  margin-bottom: 12px;
+}
+
+.product-description {
+  margin: 20px 0;
+}
+
+.product-action-button {
+  margin-top: 50px;
+  display: flex;
+  width: 100%;
+  justify-content: end;
+}
+
+.product-action-button > button:first-child {
+  margin-right: 10px;
+}
+
+.rent-form {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.rent-form-title {
+  margin-bottom: 20px;
+}

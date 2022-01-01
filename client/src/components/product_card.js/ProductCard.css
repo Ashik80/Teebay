@@ -1,0 +1,34 @@
+.product-card {
+  width: 100%;
+  padding: 30px 50px;
+  border: 2px solid #c3cfd9;
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.product-tile {
+  margin-bottom: 12px;
+}
+
+.product-category {
+  color: #77828b;
+  margin-bottom: 8px;
+}
+
+.product-price {
+  color: #77828b;
+  margin-bottom: 12px;
+}
+
+.product-description {
+  margin: 20px 0;
+}
+
+.product-date {
+  color: #77828b;
+}
+
+.delete-button {
+  position: absolute;
+  right: 50px;
+}

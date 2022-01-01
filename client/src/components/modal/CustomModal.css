@@ -1,0 +1,16 @@
+.modal-content {
+    padding: 40px !important;
+}
+
+.action-button {
+    margin: 0 !important;
+}
+
+.modal-action {
+    display: flex;
+    justify-content: end;
+}
+
+.modal-action > button:first-child {
+    margin: 0 10px !important;
+}
