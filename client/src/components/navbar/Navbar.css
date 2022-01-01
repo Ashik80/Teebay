@@ -17,3 +17,13 @@
 .nav-list > li:nth-child(2) {
     margin-right: 40px;
 }
+
+.nav-link {
+    text-decoration: none;
+    color: #2f2f2f;
+}
+
+.nav-link-active {
+    text-decoration: underline;
+    color: #5829BB;
+}

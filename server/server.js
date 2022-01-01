@@ -1,9 +1,14 @@
 const express = require('express');
 // const db = require('./config/db');
 const schema = require('./schema');
+const cors = require('cors')
 const {graphqlHTTP} = require('express-graphql');
 
 const app = express();
+
+app.use(cors({
+  origin: "http://localhost:3000"
+}))
 
 // app.use(express.json());
 

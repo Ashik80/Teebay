@@ -16,7 +16,7 @@ const boughtBy = require('./models/bought_by');
 const rentedBy = require('./models/rent_by');
 const prod_cat = require('./models/product_category');
 const AUTH_TOKEN = require('./auth/tokenGenerator');
-const GraphQLDate = require('graphql-date')
+const GraphQLDate = require('graphql-date');
 
 const UserModel = user(db.sequelize, db.Sequelize.DataTypes);
 const ProductModel = product(db.sequelize, db.Sequelize.DataTypes);
@@ -155,6 +155,12 @@ const Product = new GraphQLObjectType({
           return categories;
         },
       },
+      createdAt: {
+        type: GraphQLDate,
+        resolve: (product) => {
+          return product.createdAt;
+        },
+      },
     };
   },
 });
@@ -173,7 +179,7 @@ const Category = new GraphQLObjectType({
       title: {
         type: GraphQLString,
         resolve(category) {
-          return category.title;
+          return category.title.toLowerCase();
         },
       },
     };
