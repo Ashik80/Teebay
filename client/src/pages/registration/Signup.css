@@ -25,24 +25,23 @@
     border: 2px solid #C3CFD9;
     padding: 30px 70px;
     width: 550px;
-    height: 500px;
     padding-top: 50px;
     align-items: center;
 }
 
 .signup-input {
-    margin: 10px 0;
+    margin: 10px 0 !important;
     width: 100%;
 }
 
-.signup-form-row > .signup-input:first-child {
-    margin: 10px 0;
-    margin-right: 5px;
+.signup-form-row > .field:first-child {
+    margin: 10px 0 !important;
+    margin-right: 5px !important;
 }
 
-.signup-form-row > .signup-input:nth-child(2) {
-    margin: 10px 0;
-    margin-left: 5px;
+.signup-form-row > .field:nth-child(2) {
+    margin: 10px 0 !important;
+    margin-left: 5px !important;
 }
 
 .signup-button {

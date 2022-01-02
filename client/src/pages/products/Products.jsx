@@ -14,6 +14,7 @@ const getProductList = gql`
       rent_option
       description
       createdAt
+      userId
       productCategories {
         category {
           title

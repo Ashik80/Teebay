@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 import Login from './pages/login/Login';
 import Signup from './pages/registration/Signup';
@@ -8,15 +8,22 @@ import Navbar from './components/navbar/Navbar';
 import AddProduct from './pages/add-product/AddProduct';
 import ProductDetails from './pages/product-details/ProductDetails';
 import Products from './pages/products/Products';
+import { useNavigate } from 'react-router-dom';
+import {authenticate} from './auth/auth';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    authenticate(setLoggedIn, navigate);
+  }, [loggedIn]);
+  
   return (
     <>
-      {loggedIn && <Navbar logout={() => setLoggedIn(false)} />}
+      {loggedIn && <Navbar setLoggedIn={setLoggedIn} />}
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login setLoggedIn={setLoggedIn} />} />
+        <Route path="/signup" element={<Signup setLoggedIn={setLoggedIn} />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/products" element={<Products />} />
         <Route path="/add-product" element={<AddProduct />} />

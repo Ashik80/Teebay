@@ -5,33 +5,29 @@ import { Button, Input } from 'semantic-ui-react';
 import CustomModal from '../../components/modal/CustomModal';
 import modalReducer from '../../helpers/modalReducer';
 import { useParams } from 'react-router-dom';
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import formatCategoryTitles from '../../helpers/categoryTitlesFormat';
 
-const ProductDetails = () => {
-  const { id } = useParams();
-
-  const getProduct = gql`
-    query {
-      products(id: ${id}) {
-        id
-        title
-        price
-        rent_price
-        rent_option
-        description
-        productCategories {
-          category {
-            title
-          }
+const getProduct = gql`
+  query Product($id: Int) {
+    product(id: $id) {
+      id
+      title
+      price
+      rent_price
+      rent_option
+      description
+      productCategories {
+        category {
+          title
         }
       }
     }
-  `;
+  }
+`;
 
-  const { loading, error, data } = useQuery(getProduct, {
-    variables: { id },
-  });
+const ProductDetails = () => {
+  const { id } = useParams();
 
   const [state, dispatch] = useReducer(modalReducer, {
     open: false,
@@ -42,14 +38,19 @@ const ProductDetails = () => {
   const [categories, setCategories] = useState('');
   const [product, setProduct] = useState();
   const [isBuying, setIsBuying] = useState(false);
+  const [productId, setProductId] = useState(parseInt(id));
 
-  useEffect(() => {
-    if (data && data.products) {
-      setProduct(data.products[0]);
-      let catTitles = formatCategoryTitles(data.products[0].productCategories);
-      setCategories(catTitles);
-    }
-  }, [data]);
+  const [loadProduct, { loading, error }] = useLazyQuery(getProduct);
+
+  useEffect(async () => {
+    let result = await loadProduct({
+      variables: { id: productId },
+    });
+    setProduct(result.data.product);
+    let catTitles = formatCategoryTitles(result.data.product.productCategories);
+    setCategories(catTitles);
+    console.log(result.data);
+  }, []);
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;

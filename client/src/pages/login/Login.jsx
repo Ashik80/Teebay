@@ -3,17 +3,41 @@ import './Login.css';
 import { Button, Form, Input } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { gql, useMutation } from '@apollo/client';
 
-const Login = () => {
+const log_in = gql`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      id
+      token
+    }
+  }
+`;
+
+const Login = ({ setLoggedIn }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    console.log(errors.email);
-    console.log(data);
+
+  const [login, { loading, error }] = useMutation(log_in);
+
+  const onSubmit = async (loginData) => {
+    let result = await login({
+      variables: { email: loginData.email, password: loginData.password },
+    });
+    if (result.data.login) {
+      localStorage.setItem('auth', JSON.stringify(result.data.login));
+      setLoggedIn(true);
+    }
+    if (error) {
+      console.log('ERROR:', error);
+    }
   };
+
+  if (loading) return 'Submitting...';
+  if (error) return `Submission error! ${error.message}`;
 
   return (
     <div className="login">
@@ -32,7 +56,7 @@ const Login = () => {
                 {...register('email', {
                   required: 'Email is required',
                   pattern: {
-                    value: /[^@ \t\r\n]+@[^@ \t\r\n]+.[^@ \t\r\n]+/,
+                    value: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
                     message: 'Email format is not valid',
                   },
                 })}
@@ -54,9 +78,6 @@ const Login = () => {
                 LOGIN
               </Button>
             </div>
-            {/* <Button type="submit" color="violet" className="login-button">
-              LOGIN
-            </Button> */}
             <p>
               Dont have an account? <Link to="/signup">Signup</Link>
             </p>

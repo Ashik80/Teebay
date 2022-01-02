@@ -6,6 +6,7 @@ import modalReducer from '../../helpers/modalReducer';
 import formatDate from '../../helpers/dateFormat';
 import { Link } from 'react-router-dom';
 import formatCategoryTitles from '../../helpers/categoryTitlesFormat';
+import { getAuth } from '../../auth/auth';
 
 const ProductCard = ({ product }) => {
   const [state, dispatch] = useReducer(modalReducer, {
@@ -31,15 +32,17 @@ const ProductCard = ({ product }) => {
   return (
     <Link to={`/product-details/${product.id}`} className="card-link">
       <div className="product-card">
-        <Icon
-          name="trash"
-          className="delete-button"
-          size="big"
-          onClick={(e) => {
-            e.preventDefault();
-            dispatch({ type: 'open', size: 'tiny' });
-          }}
-        />
+        {getAuth().id === product.userId && (
+          <Icon
+            name="trash"
+            className="delete-button"
+            size="big"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch({ type: 'open', size: 'tiny' });
+            }}
+          />
+        )}
         <div className="product-tile">
           <h2>{product.title}</h2>
         </div>

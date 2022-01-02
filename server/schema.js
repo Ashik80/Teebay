@@ -79,6 +79,12 @@ const User = new GraphQLObjectType({
           return user.password;
         },
       },
+      phone_number: {
+        type: GraphQLString,
+        resolve(user) {
+          return user.phone_number;
+        },
+      },
       products: {
         type: GraphQLList(Product),
         resolve(user) {
@@ -140,6 +146,12 @@ const Product = new GraphQLObjectType({
         type: GraphQLBoolean,
         resolve: (product) => {
           return product.isRented;
+        },
+      },
+      userId: {
+        type: GraphQLInt,
+        resolve: (product) => {
+          return product.userId;
         },
       },
       user: {
@@ -240,15 +252,29 @@ const Query = new GraphQLObjectType({
           id: {
             type: GraphQLInt,
           },
-          isBought: {
-            type: GraphQLBoolean,
-          },
-          isRented: {
-            type: GraphQLBoolean,
-          },
+          userId: {
+            type: GraphQLInt,
+          }
         },
         resolve(root, args) {
           return ProductModel.findAll({
+            where: args,
+            include: ProductCategoryModel,
+          });
+        },
+      },
+      product: {
+        type: Product,
+        args: {
+          id: {
+            type: GraphQLInt,
+          },
+          userId: {
+            type: GraphQLInt,
+          }
+        },
+        resolve(_, args) {
+          return ProductModel.findOne({
             where: args,
             include: ProductCategoryModel,
           });
@@ -312,11 +338,15 @@ const Mutation = new GraphQLObjectType({
           address: {
             type: GraphQLNonNull(GraphQLString),
           },
+          phone_number: {
+            type: GraphQLNonNull(GraphQLString)
+          },
           password: {
             type: GraphQLNonNull(GraphQLString),
           },
         },
         resolve: async (_, args) => {
+          console.log(args)
           let user = await UserModel.findOne({ where: { email: args.email } });
           if (user) throw new Error('User with email already exists');
           user = await UserModel.create(args);

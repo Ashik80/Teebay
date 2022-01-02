@@ -56,7 +56,11 @@ module.exports = (sequelize, DataTypes) => {
           model: 'users',
           key: 'id',
         },
-      }
+      },
+      rent_option: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {
       sequelize,
