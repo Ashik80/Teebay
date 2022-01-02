@@ -30,9 +30,16 @@ const ProductCard = ({ product }) => {
   if (!product) return 'No product';
 
   return (
-    <Link to={`/product-details/${product.id}`} className="card-link">
+    <Link
+      to={
+        getAuth()?.id === product.userId
+          ? `/edit-product/${product.id}`
+          : `/product-details/${product.id}`
+      }
+      className="card-link"
+    >
       <div className="product-card">
-        {getAuth().id === product.userId && (
+        {getAuth()?.id === product.userId && (
           <Icon
             name="trash"
             className="delete-button"

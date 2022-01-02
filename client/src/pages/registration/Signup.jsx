@@ -4,29 +4,7 @@ import { Input, Button, Form } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { gql, useMutation } from '@apollo/client';
-
-const sing_up = gql`
-  mutation SignUp(
-    $first_name: String!
-    $last_name: String!
-    $email: String!
-    $address: String!
-    $phone_number: String!
-    $password: String!
-  ) {
-    register(
-      first_name: $first_name
-      last_name: $last_name
-      email: $email
-      address: $address
-      phone_number: $phone_number
-      password: $password
-    ) {
-      id
-      token
-    }
-  }
-`;
+import { SIGN_UP } from '../../api/mutation';
 
 const Signup = ({ setLoggedIn }) => {
   const {
@@ -36,7 +14,7 @@ const Signup = ({ setLoggedIn }) => {
     formState: { errors },
   } = useForm();
 
-  const [signup, { loading, error }] = useMutation(sing_up);
+  const [signup, { loading, error }] = useMutation(SIGN_UP);
 
   const onSubmit = async (signUpData) => {
     let result = await signup({
@@ -116,7 +94,7 @@ const Signup = ({ setLoggedIn }) => {
                   placeholder="Email"
                   type="text"
                   {...register('email', {
-                    required: 'email is required',
+                    required: 'Email is required',
                     pattern: {
                       value: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
                       message: 'Email format is not valid',

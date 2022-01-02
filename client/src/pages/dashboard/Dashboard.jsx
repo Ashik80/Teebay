@@ -6,31 +6,12 @@ import Container from '../../components/container/Container';
 import { gql, useLazyQuery } from '@apollo/client';
 import { getAuth } from '../../auth/auth';
 import { Link } from 'react-router-dom';
-
-const getProductList = gql`
-  query GetMyProducts($userId: Int) {
-    products(userId: $userId) {
-      id
-      title
-      price
-      rent_price
-      rent_option
-      description
-      createdAt
-      userId
-      productCategories {
-        category {
-          title
-        }
-      }
-    }
-  }
-`;
+import { GET_MY_PRODUCTS } from '../../api/query'
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
-  const [getMyProducts, { loading, error, data }] =
-    useLazyQuery(getProductList);
+  const [getMyProducts, { loading, error }] =
+    useLazyQuery(GET_MY_PRODUCTS);
 
   useEffect(async () => {
     let result = await getMyProducts({

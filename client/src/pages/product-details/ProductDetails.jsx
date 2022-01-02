@@ -7,24 +7,7 @@ import modalReducer from '../../helpers/modalReducer';
 import { useParams } from 'react-router-dom';
 import { gql, useQuery, useLazyQuery } from '@apollo/client';
 import formatCategoryTitles from '../../helpers/categoryTitlesFormat';
-
-const getProduct = gql`
-  query Product($id: Int) {
-    product(id: $id) {
-      id
-      title
-      price
-      rent_price
-      rent_option
-      description
-      productCategories {
-        category {
-          title
-        }
-      }
-    }
-  }
-`;
+import { GET_PRODUCT } from '../../api/query';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -38,18 +21,16 @@ const ProductDetails = () => {
   const [categories, setCategories] = useState('');
   const [product, setProduct] = useState();
   const [isBuying, setIsBuying] = useState(false);
-  const [productId, setProductId] = useState(parseInt(id));
 
-  const [loadProduct, { loading, error }] = useLazyQuery(getProduct);
+  const [loadProduct, { loading, error }] = useLazyQuery(GET_PRODUCT);
 
   useEffect(async () => {
     let result = await loadProduct({
-      variables: { id: productId },
+      variables: { id: parseInt(id) },
     });
     setProduct(result.data.product);
     let catTitles = formatCategoryTitles(result.data.product.productCategories);
     setCategories(catTitles);
-    console.log(result.data);
   }, []);
 
   if (loading) return 'Loading...';

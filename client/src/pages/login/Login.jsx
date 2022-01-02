@@ -4,6 +4,7 @@ import { Button, Form, Input } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { gql, useMutation } from '@apollo/client';
+import { LOG_IN } from '../../api/mutation';
 
 const log_in = gql`
   mutation Login($email: String!, $password: String!) {
@@ -21,7 +22,7 @@ const Login = ({ setLoggedIn }) => {
     formState: { errors },
   } = useForm();
 
-  const [login, { loading, error }] = useMutation(log_in);
+  const [login, { loading, error }] = useMutation(LOG_IN);
 
   const onSubmit = async (loginData) => {
     let result = await login({
