@@ -15,6 +15,7 @@ export const GET_PRODCUTS = gql`
       isRented
       productCategories {
         category {
+          id
           title
         }
       }
@@ -58,6 +59,7 @@ export const GET_MY_PRODUCTS = gql`
       isRented
       productCategories {
         category {
+          id
           title
         }
       }
@@ -77,6 +79,67 @@ export const BOUGHT_PRODUCTS = gql`
       createdAt
       productCategories {
         category {
+          id
+          title
+        }
+      }
+    }
+  }
+`;
+
+export const SOLD_PRODUCTS = gql`
+  query SoldProducts($userId: Int) {
+    soldProducts(userId: $userId) {
+      id
+      title
+      description
+      price
+      rent_price
+      rent_option
+      createdAt
+      productCategories {
+        category {
+          id
+          title
+        }
+      }
+    }
+  }
+`;
+
+export const BORROWED_PRODUCTS = gql`
+  query BorrowedProducts($userId: Int) {
+    borrowedProducts(userId: $userId) {
+      id
+      title
+      description
+      price
+      rent_price
+      rent_option
+      createdAt
+      productCategories {
+        category {
+          id
+          title
+        }
+      }
+    }
+  }
+`;
+
+export const LENT_PRODUCTS = gql`
+  query LentProducts($userId: Int) {
+    lentProducts(userId: $userId) {
+      id
+      title
+      description
+      price
+      rent_price
+      rent_option
+      createdAt
+      productCategories {
+        category {
+          id
           title
         }
       }

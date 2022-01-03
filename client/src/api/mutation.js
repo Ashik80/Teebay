@@ -54,6 +54,10 @@ export const ADD_PRODUCT = gql`
       id
       title
       description
+      price
+      rent_price
+      rent_option
+      createdAt
       productCategories {
         category {
           id
@@ -88,6 +92,10 @@ export const EDIT_PRODUCT = gql`
       id
       title
       description
+      price
+      rent_price
+      rent_option
+      createdAt
       productCategories {
         category {
           id
@@ -95,6 +103,12 @@ export const EDIT_PRODUCT = gql`
         }
       }
     }
+  }
+`;
+
+export const DELETE_PRODUCT = gql`
+  mutation DeleteProduct($id: Int) {
+    deleteProduct(id: $id)
   }
 `;
 

@@ -329,14 +329,63 @@ const Query = new GraphQLObjectType({
           });
           let bought_bies = boughtBies.map(async (b) => {
             let products = await ProductModel.findOne({
-              where: {id: b.productId},
-              include: ProductCategoryModel
-            })
-            return products
+              where: { id: b.productId },
+              include: ProductCategoryModel,
+            });
+            return products;
           });
-          let result = await Promise.all(bought_bies)
-          console.log(result)
+          let result = await Promise.all(bought_bies);
           return result;
+        },
+      },
+      soldProducts: {
+        type: GraphQLList(Product),
+        args: {
+          userId: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: async (_, args) => {
+          return await ProductModel.findAll({
+            where: { userId: args.userId, isBought: true },
+            include: ProductCategoryModel,
+          });
+        },
+      },
+      borrowedProducts: {
+        type: GraphQLList(Product),
+        args: {
+          userId: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: async (_, args) => {
+          let rentedBies = await RentedByModel.findAll({
+            where: args,
+          });
+          let rented_bies = rentedBies.map(async (r) => {
+            let products = await ProductModel.findOne({
+              where: { id: r.productId },
+              include: ProductCategoryModel,
+            });
+            return products;
+          });
+          let result = await Promise.all(rented_bies);
+          return result;
+        },
+      },
+      lentProducts: {
+        type: GraphQLList(Product),
+        args: {
+          userId: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: async (_, args) => {
+          return await ProductModel.findAll({
+            where: { userId: args.userId, isRented: true },
+            include: ProductCategoryModel,
+          });
         },
       },
     };

@@ -5,6 +5,9 @@ export default class ProductStore {
   allProducts = [];
   myProducts = [];
   boughtProducts = [];
+  soldProducts = [];
+  borrowedProducts = [];
+  lentProducts = [];
   selectedProduct = null;
 
   constructor() {
@@ -12,8 +15,23 @@ export default class ProductStore {
   }
 
   addProduct = (product) => {
-    this.allProducts.push(product);
-    this.myProducts.push(product);
+    this.allProducts = [...this.allProducts, product];
+    this.myProducts = [...this.myProducts, product];
+    console.log(this.myProducts);
+  };
+
+  updateProduct = (product) => {
+    let products = this.myProducts.filter((p) => p.id !== product.id);
+    let allProducts = this.allProducts.filter((p) => p.id !== product.id);
+    products.push(product);
+    allProducts.push(product);
+    this.myProducts = products;
+    this.allProducts = allProducts;
+  };
+
+  deleteProduct = (id) => {
+    this.allProducts = this.allProducts.filter((p) => p.id !== id)[0];
+    this.myProducts = this.myProducts.filter((p) => p.id !== id)[0];
   };
 
   setMyProducts = (products) => {
@@ -26,6 +44,18 @@ export default class ProductStore {
 
   setBoughtProducts = (products) => {
     this.boughtProducts = products;
+  };
+
+  setSoldProducts = (products) => {
+    this.soldProducts = products;
+  };
+
+  setBorrowedProducts = (products) => {
+    this.borrowedProducts = products;
+  };
+
+  setLentProducts = (products) => {
+    this.lentProducts = products;
   };
 
   selectProduct = (id) => {
@@ -50,16 +80,13 @@ export default class ProductStore {
     this.allProducts = prodlist;
   };
 
-  updateProduct = (product) => {
-    let products = this.myProducts.filter((p) => p.id !== product.id);
-    products.push(product);
-    this.myProducts = products;
-  };
-
   clearAllProducts = () => {
     this.allProducts = [];
     this.myProducts = [];
     this.boughtProducts = [];
+    this.soldProducts = [];
+    this.borrowedProducts = [];
+    this.lentProducts = [];
     this.selectedProduct = null;
   };
 }

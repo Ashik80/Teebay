@@ -34,7 +34,7 @@ const Dashboard = () => {
           Add Product
         </Button>
       </Link>
-      {myProducts?.map((product) => (
+      {myProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </Container>

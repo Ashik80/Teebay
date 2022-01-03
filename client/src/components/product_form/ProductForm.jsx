@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './ProductForm.css';
-import { Form, Button, TextArea, Select, Input } from 'semantic-ui-react';
+import { Form, Button, Input } from 'semantic-ui-react';
 import ReactSelect from 'react-select';
 import { useForm } from 'react-hook-form';
 import { useEffect } from 'react';
@@ -26,28 +26,29 @@ const ProductForm = ({ product, onSubmit, setCategories }) => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     defaultValues: {
       title: product.title,
       price: product.price,
       rent_price: product.rent_price,
       rent_option: product.rent_option,
-      description: product.description
+      description: product.description,
     },
   });
 
   useEffect(() => {
     if (product) {
-      reset(product)
+      reset(product);
       let cats = product.productCategories;
       if (cats) {
-        let catIds = cats.map((c) => {
+        let categ = cats.map((c) => {
           return { value: c.category.id.toString(), label: c.category.title };
         });
-        // let catIds = cats.map((c) => c.category.id.toString());
-        setDefCat(catIds);
-        console.log(catIds);
+        setDefCat(categ);
+        let initCat = cats.map((c) => c.category.id);
+        setCategories(initCat);
+        console.log(categ);
       }
     }
   }, [product]);
@@ -62,7 +63,6 @@ const ProductForm = ({ product, onSubmit, setCategories }) => {
         <label htmlFor="">Title</label>
         <input
           placeholder="Title"
-          // defaultValue={product.title}
           {...register('title', { required: 'Title is required' })}
         />
       </Form.Field>
@@ -75,11 +75,11 @@ const ProductForm = ({ product, onSubmit, setCategories }) => {
             isMulti
             id="cat-input"
             onChange={(value) => {
-              console.log(value)
+              setDefCat(value);
               let cats = value.map((v) => parseInt(v.value));
               setCategories(cats);
             }}
-            defaultValue={defCat}
+            value={defCat}
             options={cateogryOptions}
           />
         </div>
@@ -132,7 +132,6 @@ const ProductForm = ({ product, onSubmit, setCategories }) => {
         >
           <label htmlFor="">Rent Option</label>
           <select
-            defaultValue={product.rent_option}
             {...register('rent_option', {
               required: 'Rent Option is required',
             })}
@@ -147,7 +146,7 @@ const ProductForm = ({ product, onSubmit, setCategories }) => {
       </Form.Group>
       <div className="form-button">
         <Button color="violet" type="submit">
-          Add Product
+          {product.title ? 'Edit' : 'Add'} Product
         </Button>
       </div>
     </Form>

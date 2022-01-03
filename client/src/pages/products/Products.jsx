@@ -25,7 +25,7 @@ const Products = () => {
       <div className="page-title">
         <h2>ALL PRODUCTS</h2>
       </div>
-      {allProducts?.map((product) => (
+      {allProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </Container>

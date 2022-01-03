@@ -7,6 +7,9 @@ import formatDate from '../../helpers/dateFormat';
 import { Link } from 'react-router-dom';
 import formatCategoryTitles from '../../helpers/categoryTitlesFormat';
 import { getAuth } from '../../auth/auth';
+import { useMutation } from '@apollo/client';
+import { DELETE_PRODUCT } from '../../api/mutation';
+import { toast } from 'react-toastify';
 
 const ProductCard = ({ product }) => {
   const [state, dispatch] = useReducer(modalReducer, {
@@ -18,6 +21,8 @@ const ProductCard = ({ product }) => {
   const [categories, setCategories] = useState('');
   const [date, setDate] = useState('');
 
+  const [delete_product] = useMutation(DELETE_PRODUCT)
+
   useEffect(() => {
     if (product) {
       let catTitles = formatCategoryTitles(product.productCategories);
@@ -26,6 +31,20 @@ const ProductCard = ({ product }) => {
       setDate(date);
     }
   }, []);
+
+  const onDelete = async (e) => {
+    e.preventDefault()
+    let result = await delete_product({
+      variables: {id: product.id},
+      // update: (cache, {data}) => {
+      //   const cacheId = cache.identify(data.deleteProduct)
+      // }
+    })
+    if(result.data) {
+      toast(result.data.deleteProduct)
+    }
+    dispatch({ type: 'close'})
+  }
 
   if (!product) return 'No product';
 
@@ -60,7 +79,7 @@ const ProductCard = ({ product }) => {
         </div>
         <div className="product-description">{product.description}</div>
         <div className="product-date">Date posted: {date}</div>
-        <CustomModal size={size} open={open} dispatch={dispatch}>
+        <CustomModal size={size} open={open} dispatch={dispatch} onClick={onDelete}>
           <h2>Are you sure you want to delete this product?</h2>
         </CustomModal>
       </div>

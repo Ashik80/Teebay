@@ -3,9 +3,6 @@ import Container from '../../components/container/Container';
 import ProductCard from '../../components/product_card/ProductCard';
 
 const ProductList = ({ products }) => {
-  useEffect(() => {
-    console.log(products);
-  }, [products]);
   return (
     <Container>
       {products?.map((product) => (

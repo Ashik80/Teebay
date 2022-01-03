@@ -22,7 +22,7 @@ const AddProduct = () => {
   const [categories, setCategories] = useState([]);
 
   const [getProduct] = useLazyQuery(GET_PRODUCT);
-  const [add_product, { loading, error }] = useMutation(ADD_PRODUCT);
+  const [add_product] = useMutation(ADD_PRODUCT);
   const [edit_product] = useMutation(EDIT_PRODUCT);
 
   useEffect(async () => {
@@ -38,7 +38,6 @@ const AddProduct = () => {
   }, [id]);
 
   const onSubmit = async (productData) => {
-    console.log(productData)
     productData.categories = categories;
     productData.price = parseFloat(productData.price);
     productData.rent_price = parseFloat(productData.rent_price);
@@ -46,25 +45,34 @@ const AddProduct = () => {
     if (!editting) {
       let result = await add_product({
         variables: productData,
+        update: (cache, { data }) => {
+          const cacheId = cache.identify(data.addProduct);
+          console.log(cacheId);
+          cache.modify({
+            fields: {
+              products: (existingFieldData, { toReference }) => {
+                console.log(existingFieldData);
+                return [...existingFieldData, toReference(cacheId)];
+              },
+            },
+          });
+        },
       });
-      if (result.data && result.data.product) {
-        addProduct(result.data.product);
+      if (result.data) {
+        addProduct(result.data.addProduct);
+        navigate('/');
       }
     } else {
       productData.id = parseInt(id);
       let result = await edit_product({
         variables: productData,
       });
-      if(result.data && result.data.product) {
-        updateProduct(result.data.product)
+      if (result.data) {
+        updateProduct(result.data.editProduct);
+        navigate('/');
       }
-      console.log(result.data)
     }
-    navigate('/');
   };
-
-  if (loading) return 'Submitting...';
-  if (error) return `Submission error! ${error.message}`;
 
   return (
     <Container>
