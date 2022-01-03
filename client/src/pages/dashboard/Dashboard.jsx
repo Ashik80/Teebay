@@ -12,7 +12,7 @@ import { observer } from 'mobx-react-lite';
 
 const Dashboard = () => {
   const { myProducts, setMyProducts } = useContext(ProductStoreContext);
-  const [getMyProducts, { loading, error }] = useLazyQuery(GET_MY_PRODUCTS);
+  const [getMyProducts, { loading, error, data }] = useLazyQuery(GET_MY_PRODUCTS);
 
   useEffect(async () => {
     let result = await getMyProducts({
@@ -34,7 +34,7 @@ const Dashboard = () => {
           Add Product
         </Button>
       </Link>
-      {myProducts.map((product) => (
+      {data?.products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </Container>
