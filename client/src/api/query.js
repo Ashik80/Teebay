@@ -11,6 +11,8 @@ export const GET_PRODCUTS = gql`
       description
       createdAt
       userId
+      isBought
+      isRented
       productCategories {
         category {
           title
@@ -29,6 +31,8 @@ export const GET_PRODUCT = gql`
       rent_price
       rent_option
       description
+      isBought
+      isRented
       productCategories {
         category {
           id
@@ -50,6 +54,27 @@ export const GET_MY_PRODUCTS = gql`
       description
       createdAt
       userId
+      isBought
+      isRented
+      productCategories {
+        category {
+          title
+        }
+      }
+    }
+  }
+`;
+
+export const BOUGHT_PRODUCTS = gql`
+  query BoughtProducts($userId: Int) {
+    boughtProducts(userId: $userId) {
+      id
+      title
+      description
+      price
+      rent_price
+      rent_option
+      createdAt
       productCategories {
         category {
           title

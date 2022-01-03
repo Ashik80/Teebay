@@ -1,13 +1,19 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import './ProductDetails.css';
 import Container from '../../components/container/Container';
-import { Button, Input } from 'semantic-ui-react';
-import CustomModal from '../../components/modal/CustomModal';
 import modalReducer from '../../helpers/modalReducer';
 import { useParams } from 'react-router-dom';
-import { gql, useQuery, useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import formatCategoryTitles from '../../helpers/categoryTitlesFormat';
 import { GET_PRODUCT } from '../../api/query';
+import { getAuth } from '../../auth/auth';
+import { BUY_PRODUCT, RENT_PRRODUCT } from '../../api/mutation';
+import { toast } from 'react-toastify';
+import { ProductStoreContext } from '../../stores/productStore';
+import { observer } from 'mobx-react-lite';
+import ButtonGroup from './ButtonGroup';
+import BuyModal from './BuyModal';
+import RentModal from './RentModal';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -18,68 +24,117 @@ const ProductDetails = () => {
   });
   const { open, size } = state;
 
+  const {
+    selectProduct,
+    selectedProduct,
+    buySelectedProduct,
+    rentSelectedProduct,
+  } = useContext(ProductStoreContext);
   const [categories, setCategories] = useState('');
-  const [product, setProduct] = useState();
   const [isBuying, setIsBuying] = useState(false);
 
-  const [loadProduct, { loading, error }] = useLazyQuery(GET_PRODUCT);
+  const [load_product, { loading, error }] = useLazyQuery(GET_PRODUCT);
+  const [buy_product] = useMutation(BUY_PRODUCT);
+  const [rent_product] = useMutation(RENT_PRRODUCT);
+
+  const setCategoryTitles = (prodCategories) => {
+    let catTitles = formatCategoryTitles(prodCategories);
+    setCategories(catTitles);
+  };
 
   useEffect(async () => {
-    let result = await loadProduct({
-      variables: { id: parseInt(id) },
+    selectProduct(parseInt(id));
+    if (selectedProduct) {
+      setCategoryTitles(selectedProduct.productCategories);
+    } else {
+      let result = await load_product({
+        variables: { id: parseInt(id) },
+      });
+      if (result.data && result.data.product) {
+        selectProduct(result.data.product.id);
+        setCategoryTitles(result.data.product.productCategories);
+      }
+    }
+  }, [id, selectedProduct]);
+
+  const buyProduct = async () => {
+    let result = await buy_product({
+      variables: {
+        productId: parseInt(id),
+        userId: parseInt(getAuth().id),
+      },
     });
-    setProduct(result.data.product);
-    let catTitles = formatCategoryTitles(result.data.product.productCategories);
-    setCategories(catTitles);
-  }, []);
+    console.log(result);
+    if (result.data) {
+      buySelectedProduct();
+      toast(result.data.buyProduct);
+      dispatch({ type: 'close' });
+    }
+  };
+
+  const [rentDate, setRentDate] = useState({
+    startDate: '',
+    endDate: '',
+  });
+
+  const rentProduct = async () => {
+    console.log(rentDate);
+    let result = await rent_product({
+      variables: {
+        productId: parseInt(id),
+        userId: parseInt(getAuth().id),
+        start_date: rentDate.startDate,
+        end_date: rentDate.endDate,
+      },
+    });
+    console.log(result);
+    if (result.data) {
+      rentSelectedProduct();
+      toast(result.data.rentProduct);
+      dispatch({ type: 'close' });
+    }
+  };
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
 
   return (
     <Container>
-      <h2>{product?.title}</h2>
+      <h2>{selectedProduct?.title}</h2>
       <div className="product-category">Categories: {categories}</div>
       <div className="product-price">
-        Price: ${product?.price} | Rent: ${product?.rent_price}{' '}
-        {product?.rent_option}
+        Price: ${selectedProduct?.price} | Rent: ${selectedProduct?.rent_price}{' '}
+        {selectedProduct?.rent_option}
       </div>
-      <div className="product-description">{product?.description}</div>
+      <div className="product-description">{selectedProduct?.description}</div>
       <div className="product-action-button">
-        <Button
-          color="violet"
-          onClick={() => {
-            setIsBuying(true);
-            dispatch({ type: 'open', size: 'tiny' });
-          }}
-        >
-          Buy
-        </Button>
-        <Button
-          color="violet"
-          onClick={() => {
-            setIsBuying(false);
-            dispatch({ type: 'open', size: 'tiny' });
-          }}
-        >
-          Rent
-        </Button>
+        {!selectedProduct?.isBought && (
+          <ButtonGroup
+            isRented={selectedProduct?.isRented}
+            setIsBuying={setIsBuying}
+            dispatch={dispatch}
+          />
+        )}
       </div>
       {isBuying ? (
-        <CustomModal size={size} open={open} dispatch={dispatch}>
-          <h2>Are you sure you want to buy this product?</h2>
-        </CustomModal>
+        <BuyModal
+          size={size}
+          open={open}
+          dispatch={dispatch}
+          buyProduct={buyProduct}
+        />
       ) : (
-        <CustomModal size={size} open={open} dispatch={dispatch}>
-          <h2 className="rent-form-title">Rental Period</h2>
-          <div className="rent-form">
-            <Input type="date" label="From" size="small" />
-            <Input type="date" label="To" size="small" />
-          </div>
-        </CustomModal>
+        <RentModal
+          size={size}
+          open={open}
+          dispatch={dispatch}
+          rentDate={rentDate}
+          rentProduct={rentProduct}
+          setRentDate={setRentDate}
+        />
       )}
     </Container>
   );
 };
 
-export default ProductDetails;
+export default observer(ProductDetails);

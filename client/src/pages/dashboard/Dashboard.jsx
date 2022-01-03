@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import ProductCard from '../../components/product_card.js/ProductCard';
+import React, { useEffect, useState, useContext } from 'react';
+import ProductCard from '../../components/product_card/ProductCard';
 import './Dashboard.css';
 import { Button } from 'semantic-ui-react';
 import Container from '../../components/container/Container';
 import { gql, useLazyQuery } from '@apollo/client';
 import { getAuth } from '../../auth/auth';
 import { Link } from 'react-router-dom';
-import { GET_MY_PRODUCTS } from '../../api/query'
+import { GET_MY_PRODUCTS } from '../../api/query';
+import { ProductStoreContext } from '../../stores/productStore';
+import { observer } from 'mobx-react-lite';
 
 const Dashboard = () => {
-  const [products, setProducts] = useState([]);
-  const [getMyProducts, { loading, error }] =
-    useLazyQuery(GET_MY_PRODUCTS);
+  const { myProducts, setMyProducts } = useContext(ProductStoreContext);
+  const [getMyProducts, { loading, error }] = useLazyQuery(GET_MY_PRODUCTS);
 
   useEffect(async () => {
     let result = await getMyProducts({
       variables: { userId: getAuth().id },
     });
-    setProducts(result.data.products);
+    setMyProducts(result.data.products);
   }, []);
 
   if (loading) return 'Loading...';
@@ -33,11 +34,11 @@ const Dashboard = () => {
           Add Product
         </Button>
       </Link>
-      {products?.map((product) => (
+      {myProducts?.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </Container>
   );
 };
 
-export default Dashboard;
+export default observer(Dashboard);

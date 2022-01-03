@@ -1,15 +1,20 @@
 .product-category-input {
-    width: 300px;
-    margin-bottom: 15px;
+  width: 300px;
+  margin-bottom: 15px;
 }
 
 .form-button {
-    margin-top: 40px;
-    display: flex;
-    width: 100%;
-    justify-content: end;
+  margin-top: 40px;
+  display: flex;
+  width: 100%;
+  justify-content: end;
 }
 
 .form-button > button {
-    margin: 0 !important;
+  margin: 0 !important;
+}
+
+.product-form-input > div {
+  display: flex;
+  flex-direction: column;
 }

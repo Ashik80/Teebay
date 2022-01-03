@@ -3,6 +3,7 @@ import './ProductForm.css';
 import { Form, Button, TextArea, Select, Input } from 'semantic-ui-react';
 import ReactSelect from 'react-select';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 
 const cateogryOptions = [
   { value: '1', label: 'Electronics' },
@@ -20,22 +21,48 @@ const rentOptions = [
 ];
 
 const ProductForm = ({ product, onSubmit, setCategories }) => {
+  const [defCat, setDefCat] = useState([]);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm({
     defaultValues: {
-      title: product?.title
+      title: product.title,
+      price: product.price,
+      rent_price: product.rent_price,
+      rent_option: product.rent_option,
+      description: product.description
     },
   });
 
+  useEffect(() => {
+    if (product) {
+      reset(product)
+      let cats = product.productCategories;
+      if (cats) {
+        let catIds = cats.map((c) => {
+          return { value: c.category.id.toString(), label: c.category.title };
+        });
+        // let catIds = cats.map((c) => c.category.id.toString());
+        setDefCat(catIds);
+        console.log(catIds);
+      }
+    }
+  }, [product]);
+
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className="product-form">
-      <Form.Field error={errors.title && errors.title.message}>
+      <Form.Field
+        className="product-form-input"
+        control={Input}
+        error={errors.title && errors.title.message}
+      >
         <label htmlFor="">Title</label>
         <input
           placeholder="Title"
+          // defaultValue={product.title}
           {...register('title', { required: 'Title is required' })}
         />
       </Form.Field>
@@ -48,47 +75,64 @@ const ProductForm = ({ product, onSubmit, setCategories }) => {
             isMulti
             id="cat-input"
             onChange={(value) => {
+              console.log(value)
               let cats = value.map((v) => parseInt(v.value));
               setCategories(cats);
             }}
+            defaultValue={defCat}
             options={cateogryOptions}
-            // {...register('categories', { required: 'Categories are required' })}
           />
         </div>
       </Form.Field>
-      <Form.Field error={errors.description && errors.description.message}>
+      <Form.Field
+        control={Input}
+        className="product-form-input"
+        error={errors.description && errors.description.message}
+      >
         <label htmlFor="">Description</label>
         <textarea
           placeholder="Tell us more about the product..."
+          defaultValue={product.description}
           {...register('description', { required: 'Description is required' })}
         />
       </Form.Field>
       <Form.Group>
-        <Form.Field width={4} error={errors.price && errors.price.message}>
+        <Form.Field
+          className="product-form-input"
+          control={Input}
+          // width={4}
+          error={errors.price && errors.price.message}
+        >
           <label>Price</label>
           <input
             type="text"
             placeholder="Price"
+            defaultValue={product.price}
             {...register('price', { required: 'Price is required' })}
           />
         </Form.Field>
         <Form.Field
-          width={4}
+          className="product-form-input"
+          control={Input}
+          // width={4}
           error={errors.rent_price && errors.rent_price.message}
         >
           <label>Rent</label>
           <input
             type="text"
             placeholder="Rent"
+            defaultValue={product.rent_price}
             {...register('rent_price', { required: 'Rent price is required' })}
           />
         </Form.Field>
         <Form.Field
+          className="product-form-input"
           width={5}
           error={errors.rent_option && errors.rent_option.message}
         >
           <label htmlFor="">Rent Option</label>
           <select
+            defaultValue={product.rent_option}
             {...register('rent_option', {
               required: 'Rent Option is required',
             })}

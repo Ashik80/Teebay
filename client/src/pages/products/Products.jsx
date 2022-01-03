@@ -1,31 +1,21 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import './Products.css';
 import Container from '../../components/container/Container';
-import ProductCard from '../../components/product_card.js/ProductCard';
-import { gql, useQuery } from '@apollo/client';
-
-const getProductList = gql`
-  query {
-    products {
-      id
-      title
-      price
-      rent_price
-      rent_option
-      description
-      createdAt
-      userId
-      productCategories {
-        category {
-          title
-        }
-      }
-    }
-  }
-`;
+import ProductCard from '../../components/product_card/ProductCard';
+import { gql, useLazyQuery } from '@apollo/client';
+import { GET_PRODCUTS } from '../../api/query';
+import { ProductStoreContext } from '../../stores/productStore';
+import { observer } from 'mobx-react-lite';
 
 const Products = () => {
-  const { loading, error, data } = useQuery(getProductList);
+  const { setAllProducts, allProducts } = useContext(ProductStoreContext);
+  const [get_products, { loading, error }] = useLazyQuery(GET_PRODCUTS);
+
+  useEffect(async () => {
+    let result = await get_products();
+    if (result.data && result.data.products)
+      setAllProducts(result.data.products);
+  }, []);
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
@@ -35,11 +25,11 @@ const Products = () => {
       <div className="page-title">
         <h2>ALL PRODUCTS</h2>
       </div>
-      {data.products?.map((product) => (
+      {allProducts?.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </Container>
   );
 };
 
-export default Products;
+export default observer(Products);

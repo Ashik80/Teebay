@@ -34,6 +34,7 @@ ProductCategoryModel.belongsTo(CategoryModel);
 UserModel.hasMany(BoughtByModel);
 BoughtByModel.belongsTo(UserModel);
 BoughtByModel.belongsTo(ProductModel);
+// ProductModel.hasMany(BoughtByModel);
 UserModel.hasMany(RentedByModel);
 RentedByModel.belongsTo(UserModel);
 RentedByModel.belongsTo(ProductModel);
@@ -219,6 +220,27 @@ const ProductCategory = new GraphQLObjectType({
   },
 });
 
+const BoughtBy = new GraphQLObjectType({
+  name: 'BoughtBy',
+  description: 'Relational table between Product and User',
+  fields: () => {
+    return {
+      product: {
+        type: Product,
+        resolve(bought_by) {
+          return bought_by.getProduct();
+        },
+      },
+      user: {
+        type: User,
+        resolve(bought_by) {
+          return bought_by.getUser();
+        },
+      },
+    };
+  },
+});
+
 const Auth = new GraphQLObjectType({
   name: 'Auth',
   description: 'Returs user info',
@@ -254,7 +276,7 @@ const Query = new GraphQLObjectType({
           },
           userId: {
             type: GraphQLInt,
-          }
+          },
         },
         resolve(root, args) {
           return ProductModel.findAll({
@@ -271,7 +293,7 @@ const Query = new GraphQLObjectType({
           },
           userId: {
             type: GraphQLInt,
-          }
+          },
         },
         resolve(_, args) {
           return ProductModel.findOne({
@@ -292,6 +314,29 @@ const Query = new GraphQLObjectType({
             where: args,
             include: CategoryModel,
           });
+        },
+      },
+      boughtProducts: {
+        type: GraphQLList(Product),
+        args: {
+          userId: {
+            type: GraphQLInt,
+          },
+        },
+        resolve: async (_, args) => {
+          let boughtBies = await BoughtByModel.findAll({
+            where: args,
+          });
+          let bought_bies = boughtBies.map(async (b) => {
+            let products = await ProductModel.findOne({
+              where: {id: b.productId},
+              include: ProductCategoryModel
+            })
+            return products
+          });
+          let result = await Promise.all(bought_bies)
+          console.log(result)
+          return result;
         },
       },
     };
@@ -339,14 +384,14 @@ const Mutation = new GraphQLObjectType({
             type: GraphQLNonNull(GraphQLString),
           },
           phone_number: {
-            type: GraphQLNonNull(GraphQLString)
+            type: GraphQLNonNull(GraphQLString),
           },
           password: {
             type: GraphQLNonNull(GraphQLString),
           },
         },
         resolve: async (_, args) => {
-          console.log(args)
+          console.log(args);
           let user = await UserModel.findOne({ where: { email: args.email } });
           if (user) throw new Error('User with email already exists');
           user = await UserModel.create(args);
@@ -497,6 +542,11 @@ const Mutation = new GraphQLObjectType({
           if (!args.userId) throw new Error('Unauthorized attempt');
           if (!args.productId) throw new Error('No products found');
           let boughtBy = await BoughtByModel.create(args);
+          let product = await ProductModel.update(
+            { isBought: true },
+            { where: { id: args.productId } }
+          );
+          if (product === 0) throw new Error('No products found');
           if (!boughtBy)
             throw new Error('A problem occurred while buying the product');
           return 'Purchase confirmed';
@@ -522,6 +572,11 @@ const Mutation = new GraphQLObjectType({
           if (!args.userId) throw new Error('Unauthorized attempt');
           if (!args.productId) throw new Error('No products found');
           let rentedBy = await RentedByModel.create(args);
+          let product = await ProductModel.update(
+            { isRented: true },
+            { where: { id: args.productId } }
+          );
+          if (product === 0) throw new Error('No products found');
           if (!rentedBy)
             throw new Error('A problem occurred while renting the product');
           return 'Product Renting successful';

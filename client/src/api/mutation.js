@@ -63,3 +63,59 @@ export const ADD_PRODUCT = gql`
     }
   }
 `;
+
+export const EDIT_PRODUCT = gql`
+  mutation EditProduct(
+    $id: Int
+    $title: String!
+    $description: String!
+    $price: Float!
+    $rent_price: Float!
+    $rent_option: String!
+    $userId: Int!
+    $categories: [Int]
+  ) {
+    editProduct(
+      id: $id
+      title: $title
+      description: $description
+      price: $price
+      rent_price: $rent_price
+      rent_option: $rent_option
+      userId: $userId
+      categories: $categories
+    ) {
+      id
+      title
+      description
+      productCategories {
+        category {
+          id
+          title
+        }
+      }
+    }
+  }
+`;
+
+export const BUY_PRODUCT = gql`
+  mutation BuyProduct($productId: Int, $userId: Int) {
+    buyProduct(productId: $productId, userId: $userId)
+  }
+`;
+
+export const RENT_PRRODUCT = gql`
+  mutation RentProduct(
+    $productId: Int
+    $userId: Int
+    $start_date: Date
+    $end_date: Date
+  ) {
+    rentProduct(
+      productId: $productId
+      userId: $userId
+      start_date: $start_date
+      end_date: $end_date
+    )
+  }
+`;

@@ -9,7 +9,9 @@ import AddProduct from './pages/add-product/AddProduct';
 import ProductDetails from './pages/product-details/ProductDetails';
 import Products from './pages/products/Products';
 import { useNavigate } from 'react-router-dom';
-import {authenticate} from './auth/auth';
+import { authenticate } from './auth/auth';
+import { ToastContainer } from 'react-toastify';
+import Log from './pages/log/Log';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -17,7 +19,7 @@ function App() {
   useEffect(() => {
     authenticate(setLoggedIn, navigate);
   }, [loggedIn]);
-  
+
   return (
     <>
       {loggedIn && <Navbar setLoggedIn={setLoggedIn} />}
@@ -26,10 +28,12 @@ function App() {
         <Route path="/signup" element={<Signup setLoggedIn={setLoggedIn} />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/log" element={<Log />} />
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/edit-product/:id" element={<AddProduct />} />
         <Route path="/product-details/:id" element={<ProductDetails />} />
       </Routes>
+      <ToastContainer />
     </>
   );
 }
