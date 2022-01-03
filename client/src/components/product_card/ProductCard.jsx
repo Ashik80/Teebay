@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
   const [categories, setCategories] = useState('');
   const [date, setDate] = useState('');
 
-  const [delete_product] = useMutation(DELETE_PRODUCT)
+  const [delete_product] = useMutation(DELETE_PRODUCT);
 
   useEffect(() => {
     if (product) {
@@ -33,18 +33,30 @@ const ProductCard = ({ product }) => {
   }, []);
 
   const onDelete = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     let result = await delete_product({
-      variables: {id: product.id},
-      // update: (cache, {data}) => {
-      //   const cacheId = cache.identify(data.deleteProduct)
-      // }
-    })
-    if(result.data) {
-      toast(result.data.deleteProduct)
+      variables: { id: product.id },
+      update: (cache, { data }) => {
+        const cacheProdId = cache.identify(data.deleteProduct);
+        cache.modify({
+          fields: {
+            products: (existingData) => {
+              let dataRef = existingData.filter((noteRef) => {
+                return cache.identify(noteRef) !== cacheProdId;
+              });
+              console.log(dataRef);
+              return dataRef;
+            },
+          },
+        });
+      },
+    });
+    if (result.data) {
+      // toast(result.data.deleteProduct.message);
+      toast('Product deleted successfully');
     }
-    dispatch({ type: 'close'})
-  }
+    dispatch({ type: 'close' });
+  };
 
   if (!product) return 'No product';
 
@@ -79,7 +91,12 @@ const ProductCard = ({ product }) => {
         </div>
         <div className="product-description">{product.description}</div>
         <div className="product-date">Date posted: {date}</div>
-        <CustomModal size={size} open={open} dispatch={dispatch} onClick={onDelete}>
+        <CustomModal
+          size={size}
+          open={open}
+          dispatch={dispatch}
+          onClick={onDelete}
+        >
           <h2>Are you sure you want to delete this product?</h2>
         </CustomModal>
       </div>

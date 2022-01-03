@@ -262,6 +262,27 @@ const Auth = new GraphQLObjectType({
   },
 });
 
+const ResponseMessage = new GraphQLObjectType({
+  name: "ResponseMessage",
+  description: "Returns a message",
+  fields: () => {
+    return {
+      id: {
+        type: GraphQLInt,
+        resolve: (response) => {
+          return response.id;
+        },
+      },
+      message: {
+        type: GraphQLString,
+        resolve: (response) => {
+          return response.message;
+        },
+      }
+    }
+  }
+})
+
 const Query = new GraphQLObjectType({
   name: 'Query',
   description: 'This is a root query',
@@ -564,7 +585,7 @@ const Mutation = new GraphQLObjectType({
         },
       },
       deleteProduct: {
-        type: GraphQLString,
+        type: Product,
         args: {
           id: {
             type: GraphQLInt,
@@ -572,9 +593,10 @@ const Mutation = new GraphQLObjectType({
         },
         resolve: async (_, args) => {
           if (!args.id) throw new Error('No products found');
-          let product = await ProductModel.destroy({ where: args });
-          if (product === 0) throw new Error('No products found');
-          return 'Product deleted successfully';
+          let product = await ProductModel.findOne({where: args})
+          let deleteResult = await ProductModel.destroy({ where: args });
+          if (deleteResult === 0) throw new Error('No products found');
+          return product;
         },
       },
       buyProduct: {
