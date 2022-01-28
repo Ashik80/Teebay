@@ -75,6 +75,7 @@ const ProductCard = ({ product }) => {
             name="trash"
             className="delete-button"
             size="big"
+            title="delete-product"
             onClick={(e) => {
               e.preventDefault();
               dispatch({ type: 'open', size: 'tiny' });

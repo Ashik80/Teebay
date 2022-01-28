@@ -17,18 +17,18 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-        {
-          productId: 3,
-          categoryId: 1,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          productId: 3,
-          categoryId: 2,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
+        // {
+        //   productId: 3,
+        //   categoryId: 1,
+        //   createdAt: new Date(),
+        //   updatedAt: new Date(),
+        // },
+        // {
+        //   productId: 3,
+        //   categoryId: 2,
+        //   createdAt: new Date(),
+        //   updatedAt: new Date(),
+        // },
       ],
       {}
     );
